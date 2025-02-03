@@ -51,4 +51,10 @@ declare global {
         data?: User
         token?: token
     }
+
+    interface UserFrontend {
+        fullname: string
+        email: string
+        password: string
+    }
 }
