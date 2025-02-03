@@ -1,32 +1,41 @@
-import { Db, MongoClient } from "mongodb"
+import mongoose, { Mongoose } from "mongoose";
+import { cached } from "./mongodb";
 
-declare global {
-    var _mongoClientPromise: Promise<MongoClient> | undefined
-}
+const databaseURL = process.env.MONGODB_URL;
+const serverState = process.env.NODE_ENV;
 
-const mongodbURL = process.env.MONGODB_URL
-const status = process.env.NODE_ENV
-const option = {}
+if (serverState === "development" && !databaseURL) throw new Error("Please define the DATABASE_URL environment variable inside .env.local");
 
-let client: MongoClient
-let clientPromise: Promise<MongoClient>
+const dbConnect = async (): Promise<Mongoose> => {
+    if (cached.conn) return cached.conn;
 
-if (!mongodbURL){
-    throw new Error('Missing MONGODB_URL environment variable')
-}
+    if (!cached.promise) {
+        const opts = {
+            bufferCommands: false,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+            maxPoolSize: 10,
+        };
 
-if(status === 'development') {
-    if(!global._mongoClientPromise){
-        client = new MongoClient(mongodbURL, option)
-        global._mongoClientPromise = client.connect()
+        cached.promise = mongoose.connect(databaseURL!, opts).then(mongoose => {
+            console.log("Connected to MongoDB!");
+            return mongoose;
+        }).catch(error => {
+            cached.promise = null;
+            console.error("Failed to connect to MongoDB:", error);
+            throw error;
+        });
     }
-    clientPromise = global._mongoClientPromise
-} else {
-    client = new MongoClient(mongodbURL, option)
-    clientPromise = client.connect()
-}
 
-export default async function connectToDatabase(): Promise<Db> {
-    const client = await clientPromise
-    return client.db()
-}
+    try {
+        cached.conn = await cached.promise;
+        return cached.conn;
+    } catch (error) {
+        cached.conn = null;
+        cached.promise = null;
+        console.error("Failed to establish MongoDB connection:", error);
+        throw error;
+    }
+};
+
+export default dbConnect;
