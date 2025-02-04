@@ -45,9 +45,10 @@ declare global {
         updatedAt?: Date;
     }
 
-    interface RegisterApi {
+    interface ApiTypes<T = Record<string, string>> {
         success: boolean
-        message: string
+        message?: string
+        error?: T
         data?: User
         token?: token
     }

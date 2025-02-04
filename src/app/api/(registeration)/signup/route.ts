@@ -3,21 +3,23 @@ import { user_validation } from "@/lib/zod";
 import { ZodError } from "zod";
 import { formateZodError } from "@/lib/utils";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<ApiTypes>> {
     try {
         const { fullname, email, password } = await req.json();
 
-        // Validate the input using Zod
-        const checkValidation = user_validation.parse({ fullname, email, password });
-
-        // Return a success response
-        return NextResponse.json(
-            { message: "User registered successfully", data: checkValidation },
-            { status: 200 }
-        );
+        user_validation.parse({ fullname, email, password });
+        
     } catch (error) {
-        if(error instanceof ZodError){
-            console.log(formateZodError(error))
+        if (error instanceof ZodError) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    errors: formateZodError(error)
+                },
+                {
+                    status: 400
+                }
+            )
         }
     }
 }
