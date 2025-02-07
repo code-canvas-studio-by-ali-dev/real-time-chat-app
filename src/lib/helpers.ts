@@ -1,9 +1,10 @@
 import bcrypt from 'bcryptjs';
 import ms, { StringValue } from 'ms';
 import jwt, { JwtPayload, SignOptions, TokenExpiredError } from 'jsonwebtoken';
+import { Types } from 'mongoose';
 
 interface Payload {
-    _id: string;
+    _id: string | Types.ObjectId;
     email: string;
     role: string;
 }
@@ -13,10 +14,18 @@ interface Token {
     refresh_token: string;
 }
 
-class HelpingKit {
-    private secretKey: string;
+interface DecodedToken {
+    _id: string;
+    email: string;
+    role: string;
+    iat: number;
+    exp: number;
+  }
 
-    constructor(secretKey: string) {
+class helpingKit {
+    private secretKey: string | undefined;
+
+    constructor(secretKey?: string) {
         this.secretKey = secretKey;
     }
 
@@ -31,7 +40,7 @@ class HelpingKit {
     generateToken<T extends object>(payload: T, expiresIn: StringValue): string {
         const expireMs = ms(expiresIn)
         const option: SignOptions = { expiresIn: expireMs }
-        return jwt.sign(payload, this.secretKey, option);
+        return jwt.sign(payload, this.secretKey!, option);
     }
 
     generateSessionsTokens(payload: Payload): Token {
@@ -42,15 +51,29 @@ class HelpingKit {
 
     async verifyToken(token: string): Promise<JwtPayload | string> {
         try {
-            return jwt.verify(token, this.secretKey)
+            return jwt.verify(token, this.secretKey!)
         } catch (error) {
-            if(error instanceof TokenExpiredError){
+            if (error instanceof TokenExpiredError) {
                 throw new Error('Token expires');
             } else {
                 throw new Error('Invalid Token')
             }
         }
     }
+
+    isTokenExpired (token: string): boolean {
+        try {
+            const decoded = jwt.decode(token) as DecodedToken | null;
+            if (!decoded || !decoded.exp) {
+                return true;
+            }
+            const currentTime = Math.floor(Date.now() / 1000);
+            return decoded.exp < currentTime;
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return true;
+        }
+    };
 }
 
-export default HelpingKit;
+export default helpingKit;

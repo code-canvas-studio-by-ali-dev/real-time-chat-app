@@ -18,7 +18,7 @@ const userSchema: Schema = new mongoose.Schema(
         role: {
             type: String,
             enum: ['Admin', 'User', 'Employee', 'Tester'],
-            default: "useUserr"
+            default: "User"
         },
         refreshToken: {
             type: String,
@@ -30,6 +30,6 @@ const userSchema: Schema = new mongoose.Schema(
     }
 )
 
-const User = mongoose.model<UserTypes>("users", userSchema)
+const User = mongoose.models.User as mongoose.Model<UserTypes>  ||  mongoose.model<UserTypes>("User", userSchema)
 
 export default User;

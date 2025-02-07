@@ -1,7 +1,7 @@
 import mongoose, { Mongoose } from "mongoose";
 import { cached } from "./mongodb";
 
-const databaseURL = process.env.MONGODB_URL;
+const databaseURL = `${process.env.MONGODB_URL}/${process.env.MONGODB_NAME}`;
 const serverState = process.env.NODE_ENV;
 
 if (serverState === "development" && !databaseURL) throw new Error("Please define the DATABASE_URL environment variable inside .env.local");

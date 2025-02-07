@@ -14,6 +14,19 @@ const formateZodError = <T extends ZodTypeAny>(error: ZodError<T>): Record<strin
     return formattedErrors;
 }
 
+const serverSideCookiesOptions = (time: number): CookieOptions => {
+    const options: CookieOptions = {
+        maxAge: 1000 * 60 * 60 * 24 * time,
+        sameSite: "strict",
+        path: "/",
+        httpOnly: true,
+        secure: true,
+    }
+
+    return options
+}
+
 export {
-    formateZodError
+    formateZodError,
+    serverSideCookiesOptions
 }
