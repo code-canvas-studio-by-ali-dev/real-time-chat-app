@@ -66,4 +66,21 @@ declare global {
         path?: string;
         maxAge?: number;
     }
+
+    interface LayoutProps {
+        children: React.ReactNode
+    }
+
+    interface ErrorsType {
+        fullname?: string;
+        email?: string;
+        password?: string;
+    }
+    
+    interface PasswordCheckProps {
+        value: { password: string },
+        handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+            errors: ErrorsType | undefined
+    }
+    
 }
