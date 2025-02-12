@@ -1,8 +1,9 @@
-import { montserrat } from '@/fonts/fonts'
-import { FormControl, FormLabel, Input, LinearProgress, Typography } from '@mui/joy'
+import { FormControl, FormHelperText, FormLabel, Input, LinearProgress, Typography } from '@mui/joy'
 import React from 'react'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { InfoOutlined } from '@mui/icons-material';
+import clsx from 'clsx';
 
 const PasswordCheck: React.FC<PasswordCheckProps> = ({ value, handleChange, errors }) => {
     const [visibility, setVisibility] = React.useState<boolean>(false);
@@ -19,22 +20,15 @@ const PasswordCheck: React.FC<PasswordCheckProps> = ({ value, handleChange, erro
         if (/[A-Z]/.test(password)) strength += 1;
         if (/[a-z]/.test(password)) strength += 1;
         if (/[0-9]/.test(password)) strength += 1;
-        if (/[\W_]/.test(password)) strength += 1; // Special character check
-        return (strength / 5) * 100; // Return percentage
+        if (/[\W_]/.test(password)) strength += 1;
+        return (strength / 5) * 100;
     }
 
     const strengthValue = getPasswordStrength(value.password);
 
     return (
-        <FormControl
-            className='-space-y-1'
-            error={errors?.password ? true : false}
-        >
-            <FormLabel
-                sx={{
-                    fontFamily: montserrat.style.fontFamily,
-                    fontSize: '12px'
-                }}>
+        <FormControl error={errors?.password ? true : false}>
+            <FormLabel className='!text-xs'>
                 Password
             </FormLabel>
             <Input
@@ -54,6 +48,10 @@ const PasswordCheck: React.FC<PasswordCheckProps> = ({ value, handleChange, erro
                         onClick={handleVisibleClick}
                     />}
             />
+            <FormHelperText className={clsx('!mt-1 !text-xs !flex !items-start', {'!hidden': !errors?.password || strengthValue > 0 })}>
+                <InfoOutlined className='!text-sm' />
+                {errors?.password && errors?.password}
+            </FormHelperText>
             <div className={value.password === '' ? '!hidden' : '!mt-1'}>
                 <LinearProgress
                     determinate

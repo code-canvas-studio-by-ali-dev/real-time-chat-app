@@ -11,7 +11,7 @@ const montserrat = Montserrat({
     weight: ["400", "600", "700"],
     subsets: ["latin"],
     variable: "--font-montserrat",
-    display: "swap",
+    preload: true
 });
 
 const aceme = Acme({
