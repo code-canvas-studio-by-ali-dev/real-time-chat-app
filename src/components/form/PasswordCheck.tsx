@@ -3,7 +3,6 @@ import { FormControl, FormLabel, Input, LinearProgress, Typography } from '@mui/
 import React from 'react'
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import InfoOutlined from '@mui/icons-material/InfoOutlined';
 
 const PasswordCheck: React.FC<PasswordCheckProps> = ({ value, handleChange, errors }) => {
     const [visibility, setVisibility] = React.useState<boolean>(false);

@@ -21,4 +21,4 @@ const aceme = Acme({
     display: "swap",
 })
 
-export { poppins, montserrat };
+export { poppins, montserrat, aceme };
