@@ -15,6 +15,8 @@ const dbConnect = async (): Promise<Mongoose> => {
             serverSelectionTimeoutMS: 5000,
             socketTimeoutMS: 45000,
             maxPoolSize: 10,
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
         };
 
         cached.promise = mongoose.connect(databaseURL!, opts).then(mongoose => {

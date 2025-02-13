@@ -1,21 +1,8 @@
-'use client'
-
 import gsap from 'gsap';
 import Image from 'next/image'
-import React, { FC, useEffect, useRef } from 'react'
+import React, { FC } from 'react'
 
 const layout: FC<LayoutProps> = ({ children }) => {
-    const logoRef = useRef(null)
-
-    useEffect(() => {
-        gsap.from(logoRef.current, {
-            opacity: 0,
-            y: -50,
-            duration: 1,
-            delay: 0.5,
-            ease: 'bounce.out',
-        });
-    }, []);
     return (
         <section className="flex justify-around items-center w-svw h-svh overflow-hidden">
             <Image
@@ -26,7 +13,7 @@ const layout: FC<LayoutProps> = ({ children }) => {
                 objectFit='cover'
                 priority
             />
-            <div ref={logoRef}>
+            <div>
                 <Image
                     src="/fast-connect-2.svg"
                     alt="fast connect logo"

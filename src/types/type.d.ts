@@ -54,7 +54,7 @@ declare global {
     }
 
     interface UserFrontend {
-        fullname: string
+        fullname?: string
         email: string
         password: string
     }
@@ -76,11 +76,22 @@ declare global {
         email?: string;
         password?: string;
     }
-    
+
     interface PasswordCheckProps {
         value: { password: string },
         handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-            errors: ErrorsType | undefined
+        errors: ErrorsType | undefined
+        page: string
     }
-    
+}
+
+declare module "next-auth" {
+    interface Session {
+        user: {
+            id: string;
+            name?: string | null;
+            email?: string | null;
+            image?: string | null;
+        };
+    }
 }

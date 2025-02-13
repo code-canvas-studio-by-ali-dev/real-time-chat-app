@@ -5,7 +5,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { InfoOutlined } from '@mui/icons-material';
 import clsx from 'clsx';
 
-const PasswordCheck: React.FC<PasswordCheckProps> = ({ value, handleChange, errors }) => {
+const PasswordCheck: React.FC<PasswordCheckProps> = ({ value, handleChange, errors, page }) => {
     const [visibility, setVisibility] = React.useState<boolean>(false);
     const minLength = 8;
 
@@ -52,7 +52,7 @@ const PasswordCheck: React.FC<PasswordCheckProps> = ({ value, handleChange, erro
                 <InfoOutlined className='!text-sm' />
                 {errors?.password && errors?.password}
             </FormHelperText>
-            <div className={value.password === '' ? '!hidden' : '!mt-1'}>
+            <div className={value.password === '' || page === 'login' ? '!hidden' : '!mt-1'}>
                 <LinearProgress
                     determinate
                     size='sm'

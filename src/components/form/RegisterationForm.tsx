@@ -7,28 +7,29 @@ import { user_validation } from '@/lib/zod'
 import { ZodError } from 'zod'
 import Link from 'next/link';
 import axios from 'axios';
+import { signIn } from 'next-auth/react';
 
 interface RegisterationFormProps {
     params: string
 }
 
 const RegisterationForm: FC<RegisterationFormProps> = ({ params }) => {
-    const [value, setValue] = React.useState<UserFrontend>({
-        fullname: '',
-        email: '',
-        password: ''
-    })
+    const [value, setValue] = React.useState<UserFrontend>({ fullname: '', email: '', password: '' })
     const [errors, setError] = React.useState<ErrorsType | undefined>()
+    const [loading, setLoading] = React.useState<boolean>(false)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setValue({ ...value, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (params: string) => {
         try {
-            const validateData = user_validation.parse(value);
+            const signupCred = { fullname: value.fullname, email: value.email, password: value.password }
+            const loginCred = { email: value.email, password: value.password }
+            const validateData = user_validation.parse(params === 'login' ? loginCred : signupCred);
             if (validateData) {
-                const response = await axios.post('/api/signup', { fullname: value.fullname, email: value.email, password: value.password })
+                const apiUrl = `/api/auth/${params === 'login' ? 'login' : 'signup'}`
+                const response = await axios.post(apiUrl, params === 'login' ? loginCred : signupCred)
                 console.log(response)
             }
             setValue({
@@ -45,9 +46,20 @@ const RegisterationForm: FC<RegisterationFormProps> = ({ params }) => {
         }
     };
 
+    const handleClick = async () => {
+        setLoading(true)
+        try {
+            await signIn('google')
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <form>
+            <Button type='button' onClick={handleClick}>Continue with Google</Button>
             <Stack spacing={1} sx={{ '--hue': Math.min(value.password.length * 10, 120) }}>
                 <FormControl className={params === 'login' ? '!hidden' : '!block'} error={errors?.fullname ? true : false} >
                     <FormLabel className='!text-xs'>
@@ -87,6 +99,7 @@ const RegisterationForm: FC<RegisterationFormProps> = ({ params }) => {
                     value={value}
                     handleChange={handleChange}
                     errors={errors}
+                    page={params}
                 />
                 <div className={params === 'login' ? '!hidden' : '!block'}>
                     <p className='text-[11px]'>The <Link href='/about-me' className='link-style'>Fast-Connect</Link> may keep me informed with personalized email about services. See our Privacy Policy for more details at any time.</p>
@@ -97,9 +110,9 @@ const RegisterationForm: FC<RegisterationFormProps> = ({ params }) => {
                     type="button"
                     className='rounded-full w-fit self-end text-xs'
                     size='sm'
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit(params)}
                 >
-                    Create Account
+                    {params === 'login' ? 'Login' : 'Create Account'}
                 </Button>
             </Stack>
         </form>
